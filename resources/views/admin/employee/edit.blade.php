@@ -1,4 +1,5 @@
 <div class="form-row">
+    <input type="hidden" name="id" id="inputEditId">
     <div class="form-group col-md-6">
         <label for="inputEditFirstName">First Name<span class="text-danger">*</span></label>
         <input type="text" class="form-control" name="first_name" id="inputEditFirstName">
@@ -17,7 +18,7 @@
     </div>
     <div class="form-group col-md-4">
         <label for="inputEditCompany">Company<span class="text-danger">*</span></label>
-        <select class="form-control border selectpicker" name="company_id" id="inputEditCompany" title="Select Company">
+        <select class="form-control border selectpicker" name="company" id="inputEditCompany" title="Select Company">
         </select>
     </div>
 </div>

@@ -7,6 +7,8 @@
  *
  */
 
+use App\Company;
+
 if (!function_exists('getCompany')) {
     function getCompany()
     {

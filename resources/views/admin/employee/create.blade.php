@@ -13,11 +13,11 @@
     </div>
     <div class="form-group col-md-4">
         <label for="inputCreatePhone">Phone</label>
-        <input type="text" class="form-control" name="phone" id="inputCreatePhone">
+        <input type="number" class="form-control" name="phone" id="inputCreatePhone">
     </div>
     <div class="form-group col-md-4">
         <label for="inputCreateCompany">Company<span class="text-danger">*</span></label>
-        <select class="form-control border selectpicker" name="company_id" id="inputCreateCompany" title="Select Company">
+        <select class="form-control border selectpicker" name="company" id="inputCreateCompany" title="Select Company">
             @php
                 $arr = getCompany();
                 echo getSelectOptions($arr,'','')

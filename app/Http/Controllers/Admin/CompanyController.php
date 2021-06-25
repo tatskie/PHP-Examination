@@ -116,19 +116,19 @@ class CompanyController extends Controller
 
         if (!empty($name)) {
             $query = $query->where('companies.name', $name);
-            $name = ucwords($this->source($name));
+            $name = ucwords($name);
             $filterApplied['name'] = 'Name: ' . $name;
         }
 
         if (!empty($email)) {
             $query = $query->where('companies.email', $name);
-            $email = ucwords($this->source($email));
+            $email = ucwords($email);
             $filterApplied['email'] = 'Email: ' . $email;
         }
 
         if (!empty($website)) {
             $query = $query->where('companies.website', $website);
-            $website = ucwords($this->source($website));
+            $website = ucwords($website);
             $filterApplied['website'] = 'Website: ' . $website;
         }
 
@@ -139,7 +139,7 @@ class CompanyController extends Controller
                 'id' => $data->id,
                 'name' => ucwords($data->name),
                 'email' => $data->email,
-                'logo' => $data->logo,
+                'logo' => $data->logo ? asset('storage/'. $data->logo) : asset('storage/default.png'),
                 'website' => $data->website,
                 'created_at' => $data->created_at->diffForHumans()
             ];

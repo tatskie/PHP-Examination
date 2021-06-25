@@ -49,9 +49,10 @@
                     tableCode += '<thead>'
                     tableCode += '<tr>'
                     tableCode += '<th scope="col">NO</th>'
+                    tableCode += '<th scope="col">Logo</th>'
                     tableCode += '<th scope="col">Name</th>'
                     tableCode += '<th scope="col">Email</th>'
-                    tableCode += '<th scope="col">Logo</th>'
+                    
                     tableCode += '<th scope="col">Website</th>'
                     tableCode += '<th scope="col">Created</th>'
                     tableCode += '<th scope="col">Actions</th>'
@@ -61,9 +62,9 @@
                     queryData.forEach(function (row) {
                         tableCode += '<tr>'
                         tableCode += '<th scope="row">' + counter + '</th>'
+                        tableCode += '<td><img src="' + row.logo + '"class="img-thumbnail" width="100" height="100"></td>'
                         tableCode += '<td>' + row.name + '</td>'
                         tableCode += '<td>' + row.email + '</td>'
-                        tableCode += '<td>' + row.logo + '</td>'
                         tableCode += '<td>' + row.website + '</td>'
                         tableCode += '<td>' + row.created_at + '</td>'
                         tableCode += '<td>';

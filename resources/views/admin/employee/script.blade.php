@@ -49,10 +49,11 @@
                     tableCode += '<thead>'
                     tableCode += '<tr>'
                     tableCode += '<th scope="col">NO</th>'
-                    tableCode += '<th scope="col">Name</th>'
+                    tableCode += '<th scope="col">First Name</th>'
+                    tableCode += '<th scope="col">Last Name</th>'
                     tableCode += '<th scope="col">Email</th>'
-                    tableCode += '<th scope="col">Logo</th>'
-                    tableCode += '<th scope="col">Website</th>'
+                    tableCode += '<th scope="col">Phone</th>'
+                    tableCode += '<th scope="col">Company</th>'
                     tableCode += '<th scope="col">Created</th>'
                     tableCode += '<th scope="col">Actions</th>'
                     tableCode += '</tr>'
@@ -61,14 +62,15 @@
                     queryData.forEach(function (row) {
                         tableCode += '<tr>'
                         tableCode += '<th scope="row">' + counter + '</th>'
-                        tableCode += '<td>' + row.name + '</td>'
+                        tableCode += '<td>' + row.first_name + '</td>'
+                        tableCode += '<td>' + row.last_name + '</td>'
                         tableCode += '<td>' + row.email + '</td>'
-                        tableCode += '<td>' + row.logo + '</td>'
-                        tableCode += '<td>' + row.website + '</td>'
+                        tableCode += '<td>' + row.phone + '</td>'
+                        tableCode += '<td>' + row.company + '</td>'
                         tableCode += '<td>' + row.created_at + '</td>'
                         tableCode += '<td>';
-                        tableCode += '<button type="button" class="btn btn-warning btn-sm mr-1" onclick="editCompany(' + row.id + ')">Edit</button>';
-                        tableCode += '<button type="button" class="btn btn-danger btn-sm" onclick="deleteCompany(' + row.id + ')">Delete</button>';
+                        tableCode += '<button type="button" class="btn btn-warning btn-sm mr-1" onclick="editEmployee(' + row.id + ')">Edit</button>';
+                        tableCode += '<button type="button" class="btn btn-danger btn-sm" onclick="deleteEmployee(' + row.id + ')">Delete</button>';
                          tableCode += '</td>'
                         tableCode += '</tr>'
 
@@ -98,33 +100,22 @@
             });
     }
 
-    $('form#createCompanyForm').on('submit', function (e) {
+    $('form#createEmployeeForm').on('submit', function (e) {
         e.preventDefault();
         let form = $(this);
         let url = form.attr('action');
-        let formData = new FormData();
-        let imagefile = document.querySelector('#inputCreateLogo');
+        let data = $(this).serialize();
 
-        if( document.getElementById("inputCreateLogo").files.length != 0 ){
-            formData.append("logo", imagefile.files[0]);
-        }
-
-        formData.append("name", jQuery('#inputCreateName').val());
-        formData.append("email", jQuery('#inputCreateEmail').val());
-        formData.append("website", jQuery('#inputCreateWebsite').val());
-
-        loaderBtn(true, '#createCompanySubmitBtn');
-
-        // console.log(formData);
-        axios.post(url, formData)
+        loaderBtn(true, '#createEmployeeSubmitBtn');
+        axios.post(url, data)
             .then(function (response) {
-                loaderBtn(false, '#createCompanySubmitBtn');
+                loaderBtn(false, '#createEmployeeSubmitBtn');
 
                 if (response.data.success == true) {
                     toastr.success(response.data.message)
                     show('form#filterForm');
-                    $('#createCompanyModal').modal('hide');
-                    $('#createCompanyForm')[0].reset();
+                    $('#createEmployeeModal').modal('hide');
+                    $('#createEmployeeForm')[0].reset();
                 } else {
                     toastr.error(response.data.message)
                 }
@@ -134,21 +125,24 @@
             });
     });
 
-    function editCompany(id) {
-        let url = '{{route('admin.company.edit')}}';
+    function editEmployee(id) {
+        let url = '{{route('admin.employee.edit')}}';
 
         let data = {
             id: id,
         };
+        $('#inputEditCompany').html('');
 
         axios.post(url, data)
             .then(function (response) {
                 if (response.data.success == true) {
                     let data = response.data.data[0];
-                    $('#editCompanyModal').modal('show');
-                    $('#inputEditName').val(data.name);
+                    $('#editEmployeeModal').modal('show');
+                    $('#inputEditFirstName').val(data.first_name);
+                    $('#inputEditLastName').val(data.last_name);
                     $('#inputEditEmail').val(data.email);
-                    $('#inputEditWebsite').val(data.website);
+                    $('#inputEditPhone').val(data.phone);
+                    $('#inputEditCompany').append(data.company);
                     $('#inputEditId').val(data.id);
                 } else {
                     toastr.error(response.data.message)
@@ -158,30 +152,20 @@
         });
     }
 
-    $('form#updateCompanyForm').submit(function (e) {
+    $('form#updateEmployeeForm').submit(function (e) {
         e.preventDefault();
         let form = $(this);
         let url = form.attr('action');
-        let formData = new FormData();
-        let imagefile = document.querySelector('#inputEditLogo');
+        let data = $(this).serialize();
 
-        if( document.getElementById("inputEditLogo").files.length != 0 ){
-            formData.append("logo", imagefile.files[0]);
-        }
-
-        formData.append("name", jQuery('#inputEditName').val());
-        formData.append("email", jQuery('#inputEditEmail').val());
-        formData.append("website", jQuery('#inputEditWebsite').val());
-        formData.append("id", jQuery('#inputEditId').val());
-
-        loaderBtn(true, '#editCompanySubmitBtn');
-        axios.post(url,formData)
+        loaderBtn(true, '#editEmployeeSubmitBtn');
+        axios.post(url,data)
             .then(function (response){
-                loaderBtn(false, '#editCompanySubmitBtn');
+                loaderBtn(false, '#editEmployeeSubmitBtn');
                 if (response.data.success == true) {
                     toastr.success(response.data.message)
-                    $('#editCompanyModal').modal("hide");
-                    $('#updateCompanyForm')['0'].reset();
+                    $('#editEmployeeModal').modal("hide");
+                    $('#updateEmployeeForm')['0'].reset();
                     show('form#filterForm');
                 }else{
                     toastr.error(response.data.message)
@@ -193,28 +177,28 @@
 
     });
 
-    function deleteCompany(id) {
-        let url = '{{route('admin.company.delete')}}';
+    function deleteEmployee(id) {
+        let url = '{{route('admin.employee.delete')}}';
         let deleteId = id;
-        $('#deleteCompanyModal').modal('show');
+        $('#deleteEmployeeModal').modal('show');
         $('#inputDeleteId').val(deleteId);
     }
 
-    $('form#deleteCompanyForm').on('submit', function (e) {
+    $('form#deleteEmployeeForm').on('submit', function (e) {
         e.preventDefault();
         let form = $(this);
         let url = form.attr('action');
         let data = $(this).serialize();
-        loaderBtn(true, '#deleteCompanySubmitBtn');
+        loaderBtn(true, '#deleteEmployeeSubmitBtn');
         axios.post(url, data)
             .then(function (response) {
-                loaderBtn(false, '#deleteCompanySubmitBtn');
+                loaderBtn(false, '#deleteEmployeeSubmitBtn');
 
                 if (response.data.success == true) {
                     toastr.error(response.data.message)
                     show('form#filterForm');
-                    $('#deleteCompanyModal').modal('hide');
-                    $('#deleteCompanyForm')[0].reset();
+                    $('#deleteEmployeeModal').modal('hide');
+                    $('#deleteEmployeeForm')[0].reset();
                 } else {
                     toastr.error(response.data.message)
                 }

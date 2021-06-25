@@ -19,12 +19,12 @@ class EmployeeController extends Controller
     protected $rules = array(
         'first_name' => 'required',
         'last_name' => 'required',
-        'company_id' => 'not_in:0',
+        'company' => 'not_in:0',
         'phone' => 'integer'
     );
 
     protected $customMessages = [
-        'company_id.not_in' => 'Please select company.'
+        'company.not_in' => 'Please select company.'
     ];
 
     /**
@@ -49,7 +49,7 @@ class EmployeeController extends Controller
         $last_name = $request->input('last_name');
         $email = $request->input('email');
         $phone = $request->input('phone');
-        $company_id = $request->input('company_id');
+        $company = $request->input('company');
 
         if (!Auth::user()) {
             $result['success'] = false;
@@ -72,7 +72,7 @@ class EmployeeController extends Controller
             'last_name' => $last_name,
             'email' => $email,
             'phone' => $phone,
-            'company_id' => $company_id,
+            'company_id' => $company,
             "created_at" =>  \Carbon\Carbon::now(),
             "updated_at" => \Carbon\Carbon::now()
         ];
@@ -101,9 +101,11 @@ class EmployeeController extends Controller
         $noOfRecords = $request->input('no_of_records');
         $filterApplied = null;
         $queryData = null;
-        $name = $request->input('name');
+        $first_name = $request->input('first_name');
+        $last_name = $request->input('last_name');
         $email = $request->input('email');
-        $website = $request->input('website');
+        $company = $request->input('company');
+        $phone = $request->input('phone');
 
         if (!Auth::user()) {
             $result['success'] = false;
@@ -111,24 +113,36 @@ class EmployeeController extends Controller
             return $result;
         }
 
-        $query = Employee::select('companies.*');
+        $query = Employee::select('employees.*');
 
-        if (!empty($name)) {
-            $query = $query->where('companies.name', $name);
-            $name = ucwords($this->source($name));
-            $filterApplied['name'] = 'Name: ' . $name;
+        if (!empty($first_name)) {
+            $query = $query->where('employees.first_name', $first_name);
+            $first_name = ucwords($first_name);
+            $filterApplied['first_name'] = 'First Name: ' . $first_name;
+        }
+
+        if (!empty($last_name)) {
+            $query = $query->where('employees.last_name', $last_name);
+            $last_name = ucwords($last_name);
+            $filterApplied['last_name'] = 'Last Name: ' . $last_name;
+        }
+
+        if (!empty($company)) {
+            $query = $query->where('employees.company_id', $company);
+            $company = ucwords(Company::find($company)->name);
+            $filterApplied['company'] = 'Company: ' . $company;
         }
 
         if (!empty($email)) {
-            $query = $query->where('companies.email', $name);
-            $email = ucwords($this->source($email));
+            $query = $query->where('employees.email', $email);
+            $email = ucwords($email);
             $filterApplied['email'] = 'Email: ' . $email;
         }
 
-        if (!empty($website)) {
-            $query = $query->where('companies.website', $website);
-            $website = ucwords($this->source($website));
-            $filterApplied['website'] = 'Website: ' . $website;
+        if (!empty($phone)) {
+            $query = $query->where('employees.phone', $phone);
+            $phone = ucwords($phone);
+            $filterApplied['phone'] = 'Website: ' . $phone;
         }
 
         $query = $query->paginate($noOfRecords);
@@ -179,13 +193,15 @@ class EmployeeController extends Controller
             return $result;
         }
 
+        $arr = getCompany();
+        $html_company = getSelectOptions($arr, $query->company_id,'');
         $data[] = [
             'id' => $query->id,
             'first_name' => $query->first_name,
             'last_name' => $query->last_name,
             'email' => $query->email,
             'phone' => $query->phone,
-            'company' => $query->company_id
+            'company' => $html_company
         ];
 
         $result['success'] = true;

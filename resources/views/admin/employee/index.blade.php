@@ -9,7 +9,7 @@
                 	{{ __('List of Companies.') }}
                 </div>
             	<div class="col-md-4 text-right">
-	                <div class="btn btn-primary btn-sm text-right" data-toggle="modal" data-target="#createCompanyModal">
+	                <div class="btn btn-primary btn-sm text-right" data-toggle="modal" data-target="#createEmployeeModal">
 						Add New Employee
 	                </div>
 	            </div>
@@ -104,5 +104,5 @@
 
 @section('script')
     @include('layouts.components.filter_form_script')
-    @include('admin.company.script')
+    @include('admin.employee.script')
 @endsection

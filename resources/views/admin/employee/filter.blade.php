@@ -17,7 +17,11 @@
     </div>
     <div class="form-group col-md-4">
         <label for="inputFilterCompany">Company<span class="text-danger">*</span></label>
-        <select class="form-control border selectpicker" name="company_id" id="inputFilterCompany" title="Select Company">
+        <select class="form-control border selectpicker" name="company" id="inputFilterCompany" title="Select Company">
+            @php
+                $arr = getCompany();
+                echo getSelectOptions($arr,'','Select company')
+            @endphp
         </select>
     </div>
 </div>
