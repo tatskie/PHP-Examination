@@ -10,7 +10,7 @@
                 </div>
             	<div class="col-md-4 text-right">
 	                <div class="btn btn-primary btn-sm text-right" data-toggle="modal" data-target="#createCompanyModal">
-						Add New Company
+						Add New Employee
 	                </div>
 	            </div>
 	        </div>
@@ -20,9 +20,9 @@
         <div class="col-md-12 my-2">
     		@component('layouts.components.filter_form',
                 [
-                'body' => 'admin.company.filter',
+                'body' => 'admin.employee.filter',
                 'form' => 'true',
-                'formAction' => 'admin.company.show',
+                'formAction' => 'admin.employee.show',
                 'formId' => 'filterForm',
                 'formMethod' => 'POST',
                 'searchBtn' => 'search',
@@ -54,49 +54,49 @@
 
 @section('modal')   
     @component('layouts.components.modal', [
-	    'id' => 'createCompanyModal',
+	    'id' => 'createEmployeeModal',
 	    'size'=>'modal-lg',
-	    'title' => 'Add New Company',
-	    'body' => 'admin.company.create',
-	    'submitBtnId' => 'createCompanySubmitBtn',
+	    'title' => 'Add New Employee',
+	    'body' => 'admin.employee.create',
+	    'submitBtnId' => 'createEmployeeSubmitBtn',
 	    'submitBtn' => 'Submit',
 	    'closeBtn' => 'Close',
 	    'footer'=> 'true',
 	    'form' => 'true',
-	    'formAction' => 'admin.company.store',
-	    'formId' => 'createCompanyForm',
+	    'formAction' => 'admin.employee.store',
+	    'formId' => 'createEmployeeForm',
 	    'formMethod' => 'POST'
 	    ])
     @endcomponent
 
     @component('layouts.components.modal', [
-	    'id' => 'editCompanyModal',
+	    'id' => 'editEmployeeModal',
 	    'size'=>'modal-lg',
-	    'title' => 'Edit Company',
-	    'body' => 'admin.company.edit',
-	    'submitBtnId' => 'editCompanySubmitBtn',
+	    'title' => 'Edit Employee',
+	    'body' => 'admin.employee.edit',
+	    'submitBtnId' => 'editEmployeeSubmitBtn',
 	    'submitBtn' => 'Save',
 	    'closeBtn' => 'Close',
 	    'footer'=> 'true',
 	    'form' => 'true',
-	    'formAction' => 'admin.company.update',
-	    'formId' => 'updateCompanyForm',
+	    'formAction' => 'admin.employee.update',
+	    'formId' => 'updateEmployeeForm',
 	    'formMethod' => 'POST'
 	    ])
     @endcomponent
 
     @component('layouts.components.modal', [
-	    'id' => 'deleteCompanyModal',
+	    'id' => 'deleteEmployeeModal',
 	    'size'=>'modal-lg',
-	    'title' => 'Delete Company',
-	    'body' => 'admin.company.delete',
-	    'submitBtnId' => 'deleteCompanySubmitBtn',
+	    'title' => 'Delete Employee',
+	    'body' => 'admin.employee.delete',
+	    'submitBtnId' => 'deleteEmployeeSubmitBtn',
 	    'submitBtn' => 'Delete',
 	    'closeBtn' => 'Close',
 	    'footer'=> 'true',
 	    'form' => 'true',
-	    'formAction' => 'admin.company.delete',
-	    'formId' => 'deleteCompanyForm',
+	    'formAction' => 'admin.employee.delete',
+	    'formId' => 'deleteEmployeeForm',
 	    'formMethod' => 'POST'
 	    ])
     @endcomponent

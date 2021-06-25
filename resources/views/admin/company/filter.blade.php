@@ -1,6 +1,7 @@
 <div class="form-row">
     <div class="form-group col-md-6">
         <label for="inputFilterName">Name<span class="text-danger">*</span></label>
+<<<<<<< HEAD
         <input type="text" class="form-control" name="name" id="inputFilterName">
     </div>
     <div class="form-group col-md-6">

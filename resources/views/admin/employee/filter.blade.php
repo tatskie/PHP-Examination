@@ -1,15 +1,24 @@
 <div class="form-row">
     <div class="form-group col-md-6">
-        <label for="inputFilterName">Name<span class="text-danger">*</span></label>
-        <input type="text" class="form-control" name="name" id="inputFilterName">
+        <label for="inputFilterFirstName">First Name<span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="first_name" id="inputFilterFirstName">
     </div>
     <div class="form-group col-md-6">
+        <label for="inputFilterLastName">Last Name<span class="text-danger">*</span></label>
+        <input type="text" class="form-control" name="last_name" id="inputFilterLastName">
+    </div>
+    <div class="form-group col-md-4">
         <label for="inputFilterEmail">Email</label>
         <input type="email" class="form-control" name="email" id="inputFilterEmail">
     </div>
-    <div class="form-group col-md-6">
-        <label for="inputFilterWebsite">Website</label>
-        <input type="text" class="form-control" name="website" id="inputFilterWebsite">
+    <div class="form-group col-md-4">
+        <label for="inputFilterPhone">Phone</label>
+        <input type="text" class="form-control" name="phone" id="inputFilterPhone">
+    </div>
+    <div class="form-group col-md-4">
+        <label for="inputFilterCompany">Company<span class="text-danger">*</span></label>
+        <select class="form-control border selectpicker" name="company_id" id="inputFilterCompany" title="Select Company">
+        </select>
     </div>
 </div>
 

@@ -29,5 +29,6 @@ Route::prefix('admin')->as('admin.')->group(function () {
 	Route::post('employee/edit', 'Admin\EmployeeController@edit')->name('employee.edit');
 	Route::post('employee/update', 'Admin\EmployeeController@update')->name('employee.update');
 	Route::post('employee/delete', 'Admin\EmployeeController@destroy')->name('employee.delete');
+
 });
 
