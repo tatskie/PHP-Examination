@@ -102,9 +102,21 @@
         e.preventDefault();
         let form = $(this);
         let url = form.attr('action');
-        let data = $(this).serialize();
+        let formData = new FormData();
+        let imagefile = document.querySelector('#inputCreateLogo');
+
+        if( document.getElementById("inputCreateLogo").files.length != 0 ){
+            formData.append("logo", imagefile.files[0]);
+        }
+
+        formData.append("name", jQuery('#inputCreateName').val());
+        formData.append("email", jQuery('#inputCreateEmail').val());
+        formData.append("website", jQuery('#inputCreateWebsite').val());
+
         loaderBtn(true, '#createCompanySubmitBtn');
-        axios.post(url, data)
+
+        // console.log(formData);
+        axios.post(url, formData)
             .then(function (response) {
                 loaderBtn(false, '#createCompanySubmitBtn');
 
@@ -150,9 +162,20 @@
         e.preventDefault();
         let form = $(this);
         let url = form.attr('action');
-        let data = $(this).serialize();
+        let formData = new FormData();
+        let imagefile = document.querySelector('#inputEditLogo');
+
+        if( document.getElementById("inputEditLogo").files.length != 0 ){
+            formData.append("logo", imagefile.files[0]);
+        }
+
+        formData.append("name", jQuery('#inputEditName').val());
+        formData.append("email", jQuery('#inputEditEmail').val());
+        formData.append("website", jQuery('#inputEditWebsite').val());
+        formData.append("id", jQuery('#inputEditId').val());
+
         loaderBtn(true, '#editCompanySubmitBtn');
-        axios.post(url,data)
+        axios.post(url,formData)
             .then(function (response){
                 loaderBtn(false, '#editCompanySubmitBtn');
                 if (response.data.success == true) {

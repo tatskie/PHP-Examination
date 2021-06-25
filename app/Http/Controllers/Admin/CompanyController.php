@@ -17,6 +17,7 @@ class CompanyController extends Controller
 
     protected $rules = array(
         'name' => 'required',
+        'logo' => 'mimes:jpeg,png,jpg|dimensions:min_width=100,min_height=100'
     );
 
     protected $customMessages = [
@@ -43,7 +44,7 @@ class CompanyController extends Controller
     {
         $name = $request->input('name');
         $email = $request->input('email');
-        $logo = $request->input('logo');
+        $logo = null;
         $website = $request->input('website');
 
         if (!Auth::user()) {
@@ -60,6 +61,12 @@ class CompanyController extends Controller
             $result['success'] = false;
             $result['message'] = $validators->errors()->first();
             return $result;
+        }
+
+        if($request->hasFile('logo')){
+            $logo = time().'_'.$request->logo->getClientOriginalName();
+            $file = $request->file('logo');
+            $file->move('storage', $logo);  
         }
 
         $data = [
@@ -197,7 +204,7 @@ class CompanyController extends Controller
         $id = $request->input('id');
         $name = $request->input('name');
         $email = $request->input('email');
-        $logo = $request->input('logo');
+        $logo = null;
         $website = $request->input('website');
 
         if (!Auth::user()) {
@@ -224,15 +231,28 @@ class CompanyController extends Controller
             return $output;
         }
 
+        if($request->hasFile('logo')){
+            $logo = time().'_'.$request->logo->getClientOriginalName();
+            $file = $request->file('logo');
+            $file->move('storage', $logo);  
+
+            if ($query['logo'] != null) {
+                $link = 'storage/'.$query['logo'];
+
+                if (\File::exists(public_path($link))) {
+                    \File::delete(public_path($link));
+                }
+            } 
+        }
+
         $updateValues = [
             'name' => $name,
             'email' => $email,
-            'logo' => $logo,
+            'logo' => $logo ?? $query['logo'],
             'website' => $website
         ];
 
         $query = Company::where('id', $id)->update($updateValues);
-
 
         if (!$query) {
             $result['success'] = false;
@@ -268,6 +288,14 @@ class CompanyController extends Controller
             $result['success'] = false;
             $result['message'] = 'Something Went Wrong Will Fetching data, Please Refresh Your Page';
             return $result;
+        }
+
+        if ($query['logo'] != null) {
+            $link = 'storage/'.$query['logo'];
+
+            if (\File::exists(public_path($link))) {
+                \File::delete(public_path($link));
+            }
         }
 
         $query = Company::where('id', $id)->delete();
