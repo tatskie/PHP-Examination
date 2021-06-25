@@ -51,7 +51,7 @@
                                     <a class="nav-link" href="{{ route('admin.company.index') }}">{{ __('Company') }}</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">{{ __('Employee') }}</a>
+                                    <a class="nav-link" href="{{ route('admin.employee.index') }}">{{ __('Employee') }}</a>
                                 </li>
                             @endif
 

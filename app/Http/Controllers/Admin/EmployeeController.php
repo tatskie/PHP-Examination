@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Company;
+use App\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
-class CompanyController extends Controller
+class EmployeeController extends Controller
 {
     public function __construct()
     {
@@ -16,12 +17,14 @@ class CompanyController extends Controller
     }
 
     protected $rules = array(
-        'name' => 'required',
-        'logo' => 'mimes:jpeg,png,jpg|dimensions:min_width=100,min_height=100'
+        'first_name' => 'required',
+        'last_name' => 'required',
+        'company' => 'not_in:0',
+        'phone' => 'integer'
     );
 
     protected $customMessages = [
-        //
+        'company.not_in' => 'Please select company.'
     ];
 
     /**
@@ -31,7 +34,7 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        return view('admin.company.index');
+        return view('admin.employee.index');
     }
 
     /**
@@ -42,10 +45,11 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        $name = $request->input('name');
+        $first_name = $request->input('first_name');
+        $last_name = $request->input('last_name');
         $email = $request->input('email');
-        $logo = null;
-        $website = $request->input('website');
+        $phone = $request->input('phone');
+        $company = $request->input('company');
 
         if (!Auth::user()) {
             $result['success'] = false;
@@ -53,7 +57,7 @@ class CompanyController extends Controller
             return $result;
         }
 
-        $this->rules['email'] = 'email|unique:companies';
+        $this->rules['email'] = 'email|unique:employees';
 
         $validators = Validator::make($request->all(), $this->rules, $this->customMessages);
 
@@ -63,22 +67,17 @@ class CompanyController extends Controller
             return $result;
         }
 
-        if($request->hasFile('logo')){
-            $logo = time().'_'.$request->logo->getClientOriginalName();
-            $file = $request->file('logo');
-            $file->move('storage', $logo);  
-        }
-
         $data = [
-            'name' => $name,
+            'first_name' => $first_name,
+            'last_name' => $last_name,
             'email' => $email,
-            'logo' => $logo,
-            'website' => $website,
+            'phone' => $phone,
+            'company_id' => $company,
             "created_at" =>  \Carbon\Carbon::now(),
             "updated_at" => \Carbon\Carbon::now()
         ];
 
-        $createQuery = Company::insert($data);
+        $createQuery = Employee::insert($data);
 
         if (!$createQuery) {
             $result['success'] = false;
@@ -102,9 +101,11 @@ class CompanyController extends Controller
         $noOfRecords = $request->input('no_of_records');
         $filterApplied = null;
         $queryData = null;
-        $name = $request->input('name');
+        $first_name = $request->input('first_name');
+        $last_name = $request->input('last_name');
         $email = $request->input('email');
-        $website = $request->input('website');
+        $company = $request->input('company');
+        $phone = $request->input('phone');
 
         if (!Auth::user()) {
             $result['success'] = false;
@@ -112,24 +113,36 @@ class CompanyController extends Controller
             return $result;
         }
 
-        $query = Company::select('companies.*');
+        $query = Employee::select('employees.*');
 
-        if (!empty($name)) {
-            $query = $query->where('companies.name', $name);
-            $name = ucwords($name);
-            $filterApplied['name'] = 'Name: ' . $name;
+        if (!empty($first_name)) {
+            $query = $query->where('employees.first_name', $first_name);
+            $first_name = ucwords($first_name);
+            $filterApplied['first_name'] = 'First Name: ' . $first_name;
+        }
+
+        if (!empty($last_name)) {
+            $query = $query->where('employees.last_name', $last_name);
+            $last_name = ucwords($last_name);
+            $filterApplied['last_name'] = 'Last Name: ' . $last_name;
+        }
+
+        if (!empty($company)) {
+            $query = $query->where('employees.company_id', $company);
+            $company = ucwords(Company::find($company)->name);
+            $filterApplied['company'] = 'Company: ' . $company;
         }
 
         if (!empty($email)) {
-            $query = $query->where('companies.email', $name);
+            $query = $query->where('employees.email', $email);
             $email = ucwords($email);
             $filterApplied['email'] = 'Email: ' . $email;
         }
 
-        if (!empty($website)) {
-            $query = $query->where('companies.website', $website);
-            $website = ucwords($website);
-            $filterApplied['website'] = 'Website: ' . $website;
+        if (!empty($phone)) {
+            $query = $query->where('employees.phone', $phone);
+            $phone = ucwords($phone);
+            $filterApplied['phone'] = 'Website: ' . $phone;
         }
 
         $query = $query->paginate($noOfRecords);
@@ -137,10 +150,11 @@ class CompanyController extends Controller
         foreach ($query as $data) {
             $queryData[] = [
                 'id' => $data->id,
-                'name' => ucwords($data->name),
+                'first_name' => ucwords($data->first_name),
+                'last_name' => ucwords($data->last_name),
                 'email' => $data->email,
-                'logo' => $data->logo ? asset('storage/'. $data->logo) : asset('storage/default.png'),
-                'website' => $data->website,
+                'phone' => $data->phone,
+                'company' => ucwords(Company::find($data->company_id)->name),
                 'created_at' => $data->created_at->diffForHumans()
             ];
         }
@@ -158,7 +172,7 @@ class CompanyController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return Response
+     * @return \Illuminate\Http\Response
      */
     public function edit(Request $request)
     {
@@ -171,7 +185,7 @@ class CompanyController extends Controller
             return $result;
         }
 
-        $query = Company::find($id);
+        $query = Employee::find($id);
 
         if (!$query) {
             $result['success'] = false;
@@ -179,12 +193,15 @@ class CompanyController extends Controller
             return $result;
         }
 
+        $arr = getCompany();
+        $html_company = getSelectOptions($arr, $query->company_id,'');
         $data[] = [
             'id' => $query->id,
-            'name' => $query->name,
+            'first_name' => $query->first_name,
+            'last_name' => $query->last_name,
             'email' => $query->email,
-            'logo' => $query->logo,
-            'website' => $query->website
+            'phone' => $query->phone,
+            'company' => $html_company
         ];
 
         $result['success'] = true;
@@ -202,10 +219,11 @@ class CompanyController extends Controller
     public function update(Request $request)
     {
         $id = $request->input('id');
-        $name = $request->input('name');
+        $first_name = $request->input('first_name');
+        $last_name = $request->input('last_name');
         $email = $request->input('email');
-        $logo = null;
-        $website = $request->input('website');
+        $company = $request->input('company');
+        $phone = $request->input('phone');
 
         if (!Auth::user()) {
             $result['success'] = false;
@@ -213,7 +231,7 @@ class CompanyController extends Controller
             return $result;
         }
 
-        $query = Company::find($id);
+        $query = Employee::find($id);
 
         if (!$query) {
             $result['success'] = false;
@@ -221,7 +239,7 @@ class CompanyController extends Controller
             return $result;
         }
 
-        $this->rules['email'] = 'email|unique:companies,id,'.$id;
+        $this->rules['email'] = 'email|unique:employees,id,'.$id;
 
         $validators = Validator::make($request->all(), $this->rules, $this->customMessages);
 
@@ -231,28 +249,15 @@ class CompanyController extends Controller
             return $output;
         }
 
-        if($request->hasFile('logo')){
-            $logo = time().'_'.$request->logo->getClientOriginalName();
-            $file = $request->file('logo');
-            $file->move('storage', $logo);  
-
-            if ($query['logo'] != null) {
-                $link = 'storage/'.$query['logo'];
-
-                if (\File::exists(public_path($link))) {
-                    \File::delete(public_path($link));
-                }
-            } 
-        }
-
         $updateValues = [
-            'name' => $name,
+            'first_name' => $first_name,
+            'last_name' => $last_name,
             'email' => $email,
-            'logo' => $logo ?? $query['logo'],
-            'website' => $website
+            'company_id' => $company,
+            'phone' => $phone
         ];
 
-        $query = Company::where('id', $id)->update($updateValues);
+        $query = Employee::where('id', $id)->update($updateValues);
 
         if (!$query) {
             $result['success'] = false;
@@ -282,7 +287,7 @@ class CompanyController extends Controller
             return $result;
         }
 
-        $query = Company::find($id);
+        $query = Employee::find($id);
 
         if (!$query) {
             $result['success'] = false;
@@ -290,15 +295,7 @@ class CompanyController extends Controller
             return $result;
         }
 
-        if ($query['logo'] != null) {
-            $link = 'storage/'.$query['logo'];
-
-            if (\File::exists(public_path($link))) {
-                \File::delete(public_path($link));
-            }
-        }
-
-        $query = Company::where('id', $id)->delete();
+        $query = Employee::where('id', $id)->delete();
 
         if (!$query) {
             $result['success'] = false;
