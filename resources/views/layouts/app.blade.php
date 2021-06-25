@@ -9,9 +9,6 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
@@ -49,6 +46,15 @@
                                 </li>
                             @endif
                         @else
+                            @if(Auth::user()->hasRole('admin'))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin.company.index') }}">{{ __('Company') }}</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('admin.employee.index') }}">{{ __('Employee') }}</a>
+                                </li>
+                            @endif
+
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
@@ -73,8 +79,29 @@
         </nav>
 
         <main class="py-4">
+            <!-- Content -->
             @yield('content')
-        </main>
+
+            <!-- Modal -->
+            @yield('modal')
+        </main>  
     </div>
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script type="text/javascript">
+        function loaderBtn(condition, id) {
+            if (condition === true) {
+                $(id).addClass('loading disabled');
+                $(id).prop('disabled', true);
+                $(id).data("temp-name", $(id).text());
+                $(id).html('processing...');
+            } else {
+                $(id).html($(id).data("temp-name"));
+                $(id).removeClass('loading disabled');
+                $(id).prop('disabled', false);
+            }
+        }
+    </script>
+    <!-- Scripts -->
+    @yield('script')
 </body>
 </html>
