@@ -21,6 +21,3 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('admin/dashboard', function(){
-    echo 'I am Admin!';
-});
