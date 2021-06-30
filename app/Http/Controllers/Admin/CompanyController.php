@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Validator;
 
 class CompanyController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth')->only('index');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth')->only('index');
+    // }
 
     protected $rules = array(
         'name' => 'required',
