@@ -18,7 +18,7 @@
     </div>
     <div class="form-group col-md-4">
         <label for="inputEditCompany">Company<span class="text-danger">*</span></label>
-        <select class="form-control border selectpicker" name="company" id="inputEditCompany" title="Select Company">
+        <select class="form-control border selectpicker" name="company_id" id="inputEditCompany" title="Select Company">
         </select>
     </div>
 </div>

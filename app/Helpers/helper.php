@@ -8,6 +8,29 @@
  */
 
 use App\Company;
+use Illuminate\Support\Facades\Auth;
+
+if (!function_exists('checkIfUserAuthenticated')) {
+    function checkIfUserAuthenticated()
+    {
+        if (!Auth::user()) {
+            $result['success'] = false;
+            $result['message'] = 'Seems like you have been logged Out, Please Refresh Your Page';
+            return $result;
+        }
+    }
+}
+
+if (!function_exists('checkIfCollectionNotEmpty')) {
+    function checkIfCollectionNotEmpty($query)
+    {
+        if (!$query) {
+            $result['success'] = false;
+            $result['message'] = 'Something Went Wrong while Inserting into Database';
+            return $result;
+        }
+    }
+}
 
 if (!function_exists('getCompany')) {
     function getCompany()

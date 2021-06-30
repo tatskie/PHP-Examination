@@ -15,20 +15,13 @@ Route::prefix('admin')->as('admin.')->group(function () {
 	Route::get('/dashboard', 'Admin\DashboardController@index');
 
 	// Company Controller
-	Route::get('company', 'Admin\CompanyController@index')->name('company.index');
+	Route::resource('company', 'Admin\CompanyController')->except(['create', 'show', 'update']);
 	Route::post('company/show', 'Admin\CompanyController@show')->name('company.show');
-	Route::post('company/store', 'Admin\CompanyController@store')->name('company.store');
-	Route::post('company/edit', 'Admin\CompanyController@edit')->name('company.edit');
-	Route::post('company/update', 'Admin\CompanyController@update')->name('company.update');
-	Route::post('company/delete', 'Admin\CompanyController@destroy')->name('company.delete');
+	Route::post('company/update/{company}', 'Admin\CompanyController@update')->name('company.update');
 
 	// Employee Controller
-	Route::get('employee', 'Admin\EmployeeController@index')->name('employee.index');
+	Route::resource('employee', 'Admin\EmployeeController')->except(['create', 'show']);
 	Route::post('employee/show', 'Admin\EmployeeController@show')->name('employee.show');
-	Route::post('employee/store', 'Admin\EmployeeController@store')->name('employee.store');
-	Route::post('employee/edit', 'Admin\EmployeeController@edit')->name('employee.edit');
-	Route::post('employee/update', 'Admin\EmployeeController@update')->name('employee.update');
-	Route::post('employee/delete', 'Admin\EmployeeController@destroy')->name('employee.delete');
 
 });
 
