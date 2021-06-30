@@ -3,7 +3,7 @@
 
     function show(data) {
         let form = $('#filterForm');
-        let url = form.attr('action');
+        let url = '{{route('admin.company.show')}}';
 
         let method = form.attr('method');
         let theData = $(data).serialize();
@@ -102,7 +102,7 @@
     $('form#createCompanyForm').on('submit', function (e) {
         e.preventDefault();
         let form = $(this);
-        let url = form.attr('action');
+        let url = '{{route('admin.company.store')}}';
         let formData = new FormData();
         let imagefile = document.querySelector('#inputCreateLogo');
 
@@ -127,6 +127,7 @@
                     $('#createCompanyModal').modal('hide');
                     $('#createCompanyForm')[0].reset();
                 } else {
+                    console.log(response)
                     toastr.error(response.data.message)
                 }
             })
@@ -136,21 +137,22 @@
     });
 
     function editCompany(id) {
-        let url = '{{route('admin.company.edit')}}';
+        let url = '{{route('admin.company.edit', ':id')}}';
+        url = url.replace(':id', id);
 
         let data = {
             id: id,
         };
 
-        axios.post(url, data)
+        axios.get(url, data)
             .then(function (response) {
                 if (response.data.success == true) {
                     let data = response.data.data[0];
                     $('#editCompanyModal').modal('show');
-                    $('#inputEditName').val(data.name);
-                    $('#inputEditEmail').val(data.email);
-                    $('#inputEditWebsite').val(data.website);
-                    $('#inputEditId').val(data.id);
+                    $('#name').val(data.name);
+                    $('#email').val(data.email);
+                    $('#website').val(data.website);
+                    $('#id').val(data.id);
                 } else {
                     toastr.error(response.data.message)
                 }
@@ -162,18 +164,19 @@
     $('form#updateCompanyForm').submit(function (e) {
         e.preventDefault();
         let form = $(this);
-        let url = form.attr('action');
+        let url = '{{route('admin.company.update', ':id')}}';
+        url = url.replace(':id', $('#id').val());
         let formData = new FormData();
-        let imagefile = document.querySelector('#inputEditLogo');
+        let imagefile = document.querySelector('#logo');
 
-        if( document.getElementById("inputEditLogo").files.length != 0 ){
+        if( document.getElementById("logo").files.length != 0 ){
             formData.append("logo", imagefile.files[0]);
         }
 
-        formData.append("name", jQuery('#inputEditName').val());
-        formData.append("email", jQuery('#inputEditEmail').val());
-        formData.append("website", jQuery('#inputEditWebsite').val());
-        formData.append("id", jQuery('#inputEditId').val());
+        formData.append("name", jQuery('#name').val());
+        formData.append("email", jQuery('#email').val());
+        formData.append("website", jQuery('#website').val());
+        formData.append("id", jQuery('#id').val());
 
         loaderBtn(true, '#editCompanySubmitBtn');
         axios.post(url,formData)
@@ -195,19 +198,18 @@
     });
 
     function deleteCompany(id) {
-        let url = '{{route('admin.company.delete')}}';
-        let deleteId = id;
         $('#deleteCompanyModal').modal('show');
-        $('#inputDeleteId').val(deleteId);
+        $('#inputDeleteId').val(id);
     }
 
     $('form#deleteCompanyForm').on('submit', function (e) {
         e.preventDefault();
         let form = $(this);
-        let url = form.attr('action');
+        let url = '{{route('admin.company.destroy', ':id')}}';
+        url = url.replace(':id', $('#inputDeleteId').val());
         let data = $(this).serialize();
         loaderBtn(true, '#deleteCompanySubmitBtn');
-        axios.post(url, data)
+        axios.delete(url, data)
             .then(function (response) {
                 loaderBtn(false, '#deleteCompanySubmitBtn');
 

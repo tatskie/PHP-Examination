@@ -7,6 +7,7 @@ use App\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EmployeePostRequest;
 use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller
@@ -15,17 +16,6 @@ class EmployeeController extends Controller
     {
         $this->middleware('auth')->only('index');
     }
-
-    protected $rules = array(
-        'first_name' => 'required',
-        'last_name' => 'required',
-        'company' => 'not_in:0',
-        'phone' => 'integer'
-    );
-
-    protected $customMessages = [
-        'company.not_in' => 'Please select company.'
-    ];
 
     /**
      * Display a listing of the resource.
@@ -40,50 +30,18 @@ class EmployeeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\EmployeePostRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(EmployeePostRequest $request)
     {
-        $first_name = $request->input('first_name');
-        $last_name = $request->input('last_name');
-        $email = $request->input('email');
-        $phone = $request->input('phone');
-        $company = $request->input('company');
+        checkIfUserAuthenticated();
 
-        if (!Auth::user()) {
-            $result['success'] = false;
-            $result['message'] = 'Seems like you have been logged Out, Please Refresh Your Page';
-            return $result;
-        }
+        $validatedData = $request->validated();
 
-        $this->rules['email'] = 'email|unique:employees';
+        $createQuery = Employee::create($validatedData);
 
-        $validators = Validator::make($request->all(), $this->rules, $this->customMessages);
-
-        if ($validators->fails()) {
-            $result['success'] = false;
-            $result['message'] = $validators->errors()->first();
-            return $result;
-        }
-
-        $data = [
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'email' => $email,
-            'phone' => $phone,
-            'company_id' => $company,
-            "created_at" =>  \Carbon\Carbon::now(),
-            "updated_at" => \Carbon\Carbon::now()
-        ];
-
-        $createQuery = Employee::insert($data);
-
-        if (!$createQuery) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong while Inserting into Database';
-            return $result;
-        }
+        checkIfCollectionNotEmpty($createQuery);
 
         $result['success'] = true;
         $result['message'] = 'Record has been added successfully.';
@@ -107,11 +65,7 @@ class EmployeeController extends Controller
         $company = $request->input('company');
         $phone = $request->input('phone');
 
-        if (!Auth::user()) {
-            $result['success'] = false;
-            $result['message'] = 'Seems like you have been logged Out, Please Refresh Your Page';
-            return $result;
-        }
+        checkIfUserAuthenticated();
 
         $query = Employee::select('employees.*');
 
@@ -171,36 +125,23 @@ class EmployeeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Employee  $employee
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request)
+    public function edit(Employee $employee)
     {
-        $id = $request->input('id');
         $data = null;
 
-        if (!Auth::user()) {
-            $result['success'] = false;
-            $result['message'] = 'Seems like you have been logged Out, Please Refresh Your Page';
-            return $result;
-        }
-
-        $query = Employee::find($id);
-
-        if (!$query) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong Will Fetching data, Please Refresh Your Page';
-            return $result;
-        }
+        checkIfUserAuthenticated();
 
         $arr = getCompany();
-        $html_company = getSelectOptions($arr, $query->company_id,'');
+        $html_company = getSelectOptions($arr, $employee->company_id,'');
         $data[] = [
-            'id' => $query->id,
-            'first_name' => $query->first_name,
-            'last_name' => $query->last_name,
-            'email' => $query->email,
-            'phone' => $query->phone,
+            'id' => $employee->id,
+            'first_name' => $employee->first_name,
+            'last_name' => $employee->last_name,
+            'email' => $employee->email,
+            'phone' => $employee->phone,
             'company' => $html_company
         ];
 
@@ -213,57 +154,19 @@ class EmployeeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\EmployeePostRequest  $request
+     * @param  \App\Employee  $employee
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(EmployeePostRequest $request, Employee $employee)
     {
-        $id = $request->input('id');
-        $first_name = $request->input('first_name');
-        $last_name = $request->input('last_name');
-        $email = $request->input('email');
-        $company = $request->input('company');
-        $phone = $request->input('phone');
+        checkIfUserAuthenticated();
 
-        if (!Auth::user()) {
-            $result['success'] = false;
-            $result['message'] = 'Seems like you have been logged Out, Please Refresh Your Page';
-            return $result;
-        }
+        $validatedData = $request->validated();
 
-        $query = Employee::find($id);
+        $employee->update($validatedData);
 
-        if (!$query) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong Will Fetching data, Please Refresh Your Page';
-            return $result;
-        }
-
-        $this->rules['email'] = 'email|unique:employees,id,'.$id;
-
-        $validators = Validator::make($request->all(), $this->rules, $this->customMessages);
-
-        if ($validators->fails()) {
-            $output['success'] = false;
-            $output['message'] = $validators->errors()->first();
-            return $output;
-        }
-
-        $updateValues = [
-            'first_name' => $first_name,
-            'last_name' => $last_name,
-            'email' => $email,
-            'company_id' => $company,
-            'phone' => $phone
-        ];
-
-        $query = Employee::where('id', $id)->update($updateValues);
-
-        if (!$query) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong while Updating into Database';
-            return $result;
-        }
+        checkIfCollectionNotEmpty($employee);
 
         $result['success'] = true;
         $result['message'] = 'Record has been updated successfully.';
@@ -274,34 +177,16 @@ class EmployeeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Employee  $employee
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Employee $employee)
     {
-        $id = $request->input('id');
+        checkIfUserAuthenticated();
 
-        if (!Auth::user()) {
-            $result['success'] = false;
-            $result['message'] = 'Seems like you have been logged Out, Please Refresh Your Page';
-            return $result;
-        }
+        $employee->delete();
 
-        $query = Employee::find($id);
-
-        if (!$query) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong Will Fetching data, Please Refresh Your Page';
-            return $result;
-        }
-
-        $query = Employee::where('id', $id)->delete();
-
-        if (!$query) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong while Deleted into Database';
-            return $result;
-        }
+        checkIfCollectionNotEmpty($employee);
 
         $result['success'] = true;
         $result['message'] = 'Record has been deleted successfully.';

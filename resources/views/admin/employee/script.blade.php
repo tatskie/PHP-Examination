@@ -3,7 +3,7 @@
 
     function show(data) {
         let form = $('#filterForm');
-        let url = form.attr('action');
+        let url = '{{route('admin.employee.show')}}';
 
         let method = form.attr('method');
         let theData = $(data).serialize();
@@ -103,7 +103,7 @@
     $('form#createEmployeeForm').on('submit', function (e) {
         e.preventDefault();
         let form = $(this);
-        let url = form.attr('action');
+        let url = '{{route('admin.employee.store')}}';
         let data = $(this).serialize();
 
         loaderBtn(true, '#createEmployeeSubmitBtn');
@@ -126,14 +126,15 @@
     });
 
     function editEmployee(id) {
-        let url = '{{route('admin.employee.edit')}}';
+        let url = '{{route('admin.employee.edit', ':id')}}';
+        url = url.replace(':id', id);
 
         let data = {
             id: id,
         };
         $('#inputEditCompany').html('');
 
-        axios.post(url, data)
+        axios.get(url, data)
             .then(function (response) {
                 if (response.data.success == true) {
                     let data = response.data.data[0];
@@ -155,11 +156,12 @@
     $('form#updateEmployeeForm').submit(function (e) {
         e.preventDefault();
         let form = $(this);
-        let url = form.attr('action');
+        let url = '{{route('admin.employee.update', ':id')}}';
+        url = url.replace(':id', $('#inputEditId').val());
         let data = $(this).serialize();
 
         loaderBtn(true, '#editEmployeeSubmitBtn');
-        axios.post(url,data)
+        axios.put(url,data)
             .then(function (response){
                 loaderBtn(false, '#editEmployeeSubmitBtn');
                 if (response.data.success == true) {
@@ -178,19 +180,18 @@
     });
 
     function deleteEmployee(id) {
-        let url = '{{route('admin.employee.delete')}}';
-        let deleteId = id;
         $('#deleteEmployeeModal').modal('show');
-        $('#inputDeleteId').val(deleteId);
+        $('#inputDeleteId').val(id);
     }
 
     $('form#deleteEmployeeForm').on('submit', function (e) {
         e.preventDefault();
         let form = $(this);
-        let url = form.attr('action');
+        let url = '{{route('admin.employee.destroy', ':id')}}';
+        url = url.replace(':id', $('#inputDeleteId').val());
         let data = $(this).serialize();
         loaderBtn(true, '#deleteEmployeeSubmitBtn');
-        axios.post(url, data)
+        axios.delete(url, data)
             .then(function (response) {
                 loaderBtn(false, '#deleteEmployeeSubmitBtn');
 

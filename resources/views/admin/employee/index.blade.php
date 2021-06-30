@@ -79,7 +79,6 @@
 	    'closeBtn' => 'Close',
 	    'footer'=> 'true',
 	    'form' => 'true',
-	    'formAction' => 'admin.employee.update',
 	    'formId' => 'updateEmployeeForm',
 	    'formMethod' => 'POST'
 	    ])
@@ -95,7 +94,6 @@
 	    'closeBtn' => 'Close',
 	    'footer'=> 'true',
 	    'form' => 'true',
-	    'formAction' => 'admin.employee.delete',
 	    'formId' => 'deleteEmployeeForm',
 	    'formMethod' => 'POST'
 	    ])

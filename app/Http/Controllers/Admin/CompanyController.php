@@ -6,23 +6,15 @@ use App\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CompanyPostRequest;
 use Illuminate\Support\Facades\Validator;
 
 class CompanyController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth')->only('index');
-    // }
-
-    protected $rules = array(
-        'name' => 'required',
-        'logo' => 'mimes:jpeg,png,jpg|dimensions:min_width=100,min_height=100'
-    );
-
-    protected $customMessages = [
-        //
-    ];
+    public function __construct()
+    {
+        $this->middleware('auth')->only('index');
+    }
 
     /**
      * Display a listing of the resource.
@@ -37,54 +29,25 @@ class CompanyController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\CompanyPostRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CompanyPostRequest $request)
     {
-        $name = $request->input('name');
-        $email = $request->input('email');
-        $logo = null;
-        $website = $request->input('website');
+        checkIfUserAuthenticated();
 
-        if (!Auth::user()) {
-            $result['success'] = false;
-            $result['message'] = 'Seems like you have been logged Out, Please Refresh Your Page';
-            return $result;
-        }
-
-        $this->rules['email'] = 'email|unique:companies';
-
-        $validators = Validator::make($request->all(), $this->rules, $this->customMessages);
-
-        if ($validators->fails()) {
-            $result['success'] = false;
-            $result['message'] = $validators->errors()->first();
-            return $result;
-        }
+        $validatedData = $request->validated();
 
         if($request->hasFile('logo')){
             $logo = time().'_'.$request->logo->getClientOriginalName();
             $file = $request->file('logo');
             $file->move('storage', $logo);  
+            $validatedData['logo'] = $logo;
         }
 
-        $data = [
-            'name' => $name,
-            'email' => $email,
-            'logo' => $logo,
-            'website' => $website,
-            "created_at" =>  \Carbon\Carbon::now(),
-            "updated_at" => \Carbon\Carbon::now()
-        ];
+        $createQuery = Company::create($validatedData);
 
-        $createQuery = Company::insert($data);
-
-        if (!$createQuery) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong while Inserting into Database';
-            return $result;
-        }
+        checkIfCollectionNotEmpty($createQuery);
 
         $result['success'] = true;
         $result['message'] = 'Record has been added successfully.';
@@ -106,11 +69,7 @@ class CompanyController extends Controller
         $email = $request->input('email');
         $website = $request->input('website');
 
-        if (!Auth::user()) {
-            $result['success'] = false;
-            $result['message'] = 'Seems like you have been logged Out, Please Refresh Your Page';
-            return $result;
-        }
+        checkIfUserAuthenticated();
 
         $query = Company::select('companies.*');
 
@@ -160,31 +119,18 @@ class CompanyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return Response
      */
-    public function edit(Request $request)
+    public function edit(Company $company)
     {
-        $id = $request->input('id');
         $data = null;
 
-        if (!Auth::user()) {
-            $result['success'] = false;
-            $result['message'] = 'Seems like you have been logged Out, Please Refresh Your Page';
-            return $result;
-        }
-
-        $query = Company::find($id);
-
-        if (!$query) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong Will Fetching data, Please Refresh Your Page';
-            return $result;
-        }
+        checkIfUserAuthenticated();
 
         $data[] = [
-            'id' => $query->id,
-            'name' => $query->name,
-            'email' => $query->email,
-            'logo' => $query->logo,
-            'website' => $query->website
+            'id' => $company->id,
+            'name' => $company->name,
+            'email' => $company->email,
+            'logo' => $company->logo,
+            'website' => $company->website
         ];
 
         $result['success'] = true;
@@ -196,48 +142,24 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\CompanyPostRequest  $request
+     * @param  \App\Company  $company
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(CompanyPostRequest $request, Company $company)
     {
-        $id = $request->input('id');
-        $name = $request->input('name');
-        $email = $request->input('email');
-        $logo = null;
-        $website = $request->input('website');
+        checkIfUserAuthenticated();
 
-        if (!Auth::user()) {
-            $result['success'] = false;
-            $result['message'] = 'Seems like you have been logged Out, Please Refresh Your Page';
-            return $result;
-        }
-
-        $query = Company::find($id);
-
-        if (!$query) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong Will Fetching data, Please Refresh Your Page';
-            return $result;
-        }
-
-        $this->rules['email'] = 'email|unique:companies,id,'.$id;
-
-        $validators = Validator::make($request->all(), $this->rules, $this->customMessages);
-
-        if ($validators->fails()) {
-            $output['success'] = false;
-            $output['message'] = $validators->errors()->first();
-            return $output;
-        }
-
+        $validatedData = $request->validated();
+  
         if($request->hasFile('logo')){
             $logo = time().'_'.$request->logo->getClientOriginalName();
             $file = $request->file('logo');
             $file->move('storage', $logo);  
+            $validatedData['logo'] = $logo;
 
-            if ($query['logo'] != null) {
-                $link = 'storage/'.$query['logo'];
+            if ($company['logo'] != null) {
+                $link = 'storage/'.$company['logo'];
 
                 if (\File::exists(public_path($link))) {
                     \File::delete(public_path($link));
@@ -245,20 +167,9 @@ class CompanyController extends Controller
             } 
         }
 
-        $updateValues = [
-            'name' => $name,
-            'email' => $email,
-            'logo' => $logo ?? $query['logo'],
-            'website' => $website
-        ];
+        $company->update($validatedData);
 
-        $query = Company::where('id', $id)->update($updateValues);
-
-        if (!$query) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong while Updating into Database';
-            return $result;
-        }
+        checkIfCollectionNotEmpty($company);
 
         $result['success'] = true;
         $result['message'] = 'Record has been updated successfully.';
@@ -269,42 +180,24 @@ class CompanyController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Company  $company
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Company $company)
     {
-        $id = $request->input('id');
+        checkIfUserAuthenticated();
 
-        if (!Auth::user()) {
-            $result['success'] = false;
-            $result['message'] = 'Seems like you have been logged Out, Please Refresh Your Page';
-            return $result;
-        }
-
-        $query = Company::find($id);
-
-        if (!$query) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong Will Fetching data, Please Refresh Your Page';
-            return $result;
-        }
-
-        if ($query['logo'] != null) {
-            $link = 'storage/'.$query['logo'];
+        if ($company['logo'] != null) {
+            $link = 'storage/'.$company['logo'];
 
             if (\File::exists(public_path($link))) {
                 \File::delete(public_path($link));
             }
         }
 
-        $query = Company::where('id', $id)->delete();
+        $company->delete();
 
-        if (!$query) {
-            $result['success'] = false;
-            $result['message'] = 'Something Went Wrong while Deleted into Database';
-            return $result;
-        }
+        checkIfCollectionNotEmpty($company);
 
         $result['success'] = true;
         $result['message'] = 'Record has been deleted successfully.';

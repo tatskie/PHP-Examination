@@ -22,7 +22,6 @@
                 [
                 'body' => 'admin.company.filter',
                 'form' => 'true',
-                'formAction' => 'admin.company.show',
                 'formId' => 'filterForm',
                 'formMethod' => 'POST',
                 'searchBtn' => 'search',
@@ -63,7 +62,6 @@
 	    'closeBtn' => 'Close',
 	    'footer'=> 'true',
 	    'form' => 'true',
-	    'formAction' => 'admin.company.store',
 	    'formId' => 'createCompanyForm',
 	    'formMethod' => 'POST'
 	    ])
@@ -79,7 +77,6 @@
 	    'closeBtn' => 'Close',
 	    'footer'=> 'true',
 	    'form' => 'true',
-	    'formAction' => 'admin.company.update',
 	    'formId' => 'updateCompanyForm',
 	    'formMethod' => 'POST'
 	    ])
@@ -95,7 +92,6 @@
 	    'closeBtn' => 'Close',
 	    'footer'=> 'true',
 	    'form' => 'true',
-	    'formAction' => 'admin.company.delete',
 	    'formId' => 'deleteCompanyForm',
 	    'formMethod' => 'POST'
 	    ])
