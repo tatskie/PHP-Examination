@@ -21,3 +21,10 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+// Route::get('company', 'Admin\CompanyController@index')->name('company.index');
+// Route::post('company/show', 'Admin\CompanyController@show')->name('company.show');
+// Route::post('company/store', 'Admin\CompanyController@store')->name('company.store');
+// Route::post('company/edit', 'Admin\CompanyController@edit')->name('company.edit');
+// Route::post('company/update', 'Admin\CompanyController@update')->name('company.update');
+// Route::post('company/delete', 'Admin\CompanyController@destroy')->name('company.delete');
+
