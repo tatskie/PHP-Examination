@@ -91,7 +91,7 @@ class CompanyController extends Controller
             $filterApplied['website'] = 'Website: ' . $website;
         }
 
-        $query = $query->paginate($noOfRecords);
+        $query = $query->orderBy('id', 'desc')->paginate($noOfRecords);
 
         foreach ($query as $data) {
             $queryData[] = [
