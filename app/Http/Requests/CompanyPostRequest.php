@@ -29,6 +29,7 @@ class CompanyPostRequest extends FormRequest
         return [
             'name' => 'required',
             'email' => ['email', Rule::unique('companies', 'email')->ignore($this->company), 'max:255'],
+            'website' => 'string',
             'logo' => 'mimes:jpeg,png,jpg|dimensions:min_width=100,min_height=100'
         ];
     }
