@@ -99,7 +99,7 @@ class EmployeeController extends Controller
             $filterApplied['phone'] = 'Website: ' . $phone;
         }
 
-        $query = $query->paginate($noOfRecords);
+        $query = $query->orderBy('id', 'desc')->paginate($noOfRecords);
 
         foreach ($query as $data) {
             $queryData[] = [

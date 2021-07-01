@@ -12,7 +12,7 @@
 */
 
 Route::prefix('admin')->as('admin.')->group(function () {
-	Route::get('/dashboard', 'Admin\DashboardController@index');
+	Route::get('/dashboard', 'Admin\DashboardController@index')->name('dashboard');
 
 	// Company Controller
 	Route::resource('company', 'Admin\CompanyController')->except(['create', 'show', 'update']);
